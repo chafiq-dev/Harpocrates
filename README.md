@@ -1,5 +1,3 @@
-Of course, here's a readme.md for your project.
-
 # Harpocrates: Encrypt and Hide Files in Images 🤫
 
 [](https://shields.io/)
