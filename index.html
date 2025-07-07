@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en" class="system">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harpocrates - Hide Files in Images</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Styles for Material You look and feel */
+        :root {
+            --color-primary-light: #6750A4;
+            --color-on-primary-light: #FFFFFF;
+            --color-primary-container-light: #EADDFF;
+            --color-on-primary-container-light: #21005D;
+            --color-secondary-container-light: #E8DEF8;
+            --color-on-secondary-container-light: #1D192B;
+            --color-surface-container-light: #F3EDF7;
+            --color-surface-container-high-light: #ECE6F0;
+            --color-surface-container-highest-light: #E6E0E9;
+            --color-surface-light: #FEF7FF;
+            --color-on-surface-light: #1D1B20;
+            --color-on-surface-variant-light: #49454F;
+            --color-outline-light: #79747E;
+            --color-error-light: #B3261E;
+
+            --color-primary-dark: #D0BCFF;
+            --color-on-primary-dark: #381E72;
+            --color-primary-container-dark: #4F378B;
+            --color-on-primary-container-dark: #EADDFF;
+            --color-secondary-container-dark: #4A4458;
+            --color-on-secondary-container-dark: #E8DEF8;
+            --color-surface-container-dark: #211F26;
+            --color-surface-container-high-dark: #2B2930;
+            --color-surface-container-highest-dark: #36343B;
+            --color-surface-dark: #141218;
+            --color-on-surface-dark: #E6E1E5;
+            --color-on-surface-variant-dark: #CAC4D0;
+            --color-outline-dark: #938F99;
+            --color-error-dark: #F2B8B5;
+        }
+
+        html.light {
+            --color-primary: var(--color-primary-light);
+            --color-on-primary: var(--color-on-primary-light);
+            --color-primary-container: var(--color-primary-container-light);
+            --color-on-primary-container: var(--color-on-primary-container-light);
+            --color-secondary-container: var(--color-secondary-container-light);
+            --color-on-secondary-container: var(--color-on-secondary-container-light);
+            --color-surface-container: var(--color-surface-container-light);
+            --color-surface-container-high: var(--color-surface-container-high-light);
+            --color-surface-container-highest: var(--color-surface-container-highest-light);
+            --color-surface: var(--color-surface-light);
+            --color-on-surface: var(--color-on-surface-light);
+            --color-on-surface-variant: var(--color-on-surface-variant-light);
+            --color-outline: var(--color-outline-light);
+            --color-error: var(--color-error-light);
+        }
+
+        html.dark {
+            --color-primary: var(--color-primary-dark);
+            --color-on-primary: var(--color-on-primary-dark);
+            --color-primary-container: var(--color-primary-container-dark);
+            --color-on-primary-container: var(--color-on-primary-container-dark);
+            --color-secondary-container: var(--color-secondary-container-dark);
+            --color-on-secondary-container: var(--color-on-secondary-container-dark);
+            --color-surface-container: var(--color-surface-container-dark);
+            --color-surface-container-high: var(--color-surface-container-high-dark);
+            --color-surface-container-highest: var(--color-surface-container-highest-dark);
+            --color-surface: var(--color-surface-dark);
+            --color-on-surface: var(--color-on-surface-dark);
+            --color-on-surface-variant: var(--color-on-surface-variant-dark);
+            --color-outline: var(--color-outline-dark);
+            --color-error: var(--color-error-dark);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-surface);
+            color: var(--color-on-surface);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .material-card {
+            background-color: var(--color-surface-container-high);
+            border-radius: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .form-field {
+            position: relative;
+            background-color: var(--color-surface-container);
+            border-bottom: 1px solid var(--color-on-surface-variant);
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+            transition: background-color 0.3s;
+        }
+        .form-field::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            width: 100%;
+            height: 2px;
+            background-color: var(--color-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        .form-field:focus-within {
+            border-color: transparent;
+        }
+        .form-field:focus-within::after {
+            transform: scaleX(1);
+        }
+        .form-field .form-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            padding: 1.5rem 1rem 0.5rem 1rem;
+            color: var(--color-on-surface);
+        }
+        .form-field .form-label {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: var(--color-on-surface-variant);
+            pointer-events: none;
+            transform-origin: top left;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        .form-field:focus-within .form-label,
+        .form-field .form-input:not(:placeholder-shown) + .form-label {
+            transform: translateY(-0.625rem) scale(0.75);
+            color: var(--color-primary);
+        }
+
+        .material-button {
+            background-color: var(--color-primary);
+            color: var(--color-on-primary);
+            transition: background-color 0.3s, box-shadow 0.2s;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+        }
+        .material-button:hover {
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+        .material-button:disabled {
+            background-color: var(--color-on-surface-variant);
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .file-input-label {
+            border: 2px dashed var(--color-outline);
+            color: var(--color-on-surface-variant);
+            transition: border-color 0.3s, color 0.3s;
+        }
+        .file-input-label:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+        
+        .floating-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 16px;
+            border-radius: 1.5rem;
+            color: var(--color-on-surface-variant);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .floating-nav-item.active {
+            background-color: var(--color-secondary-container);
+            color: var(--color-on-secondary-container);
+        }
+        .floating-nav-item .icon {
+            transition: transform 0.2s ease-in-out;
+        }
+        .floating-nav-item:active .icon {
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+        <main class="w-full max-w-5xl mx-auto pb-32">
+            <header class="text-center mb-8">
+                <h1 class="text-4xl md:text-5xl font-bold" style="color: var(--color-primary);">Harpocrates</h1>
+                <p class="text-lg mt-2" style="color: var(--color-on-surface-variant);">Encrypt and hide files inside images, securely in your browser.</p>
+            </header>
+
+            <!-- App Content -->
+            <div id="app-content">
+                <!-- Encode View -->
+                <div id="view-encode">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Left Column: Inputs -->
+                        <div class="space-y-6">
+                            <div class="material-card p-6 flex flex-col items-center justify-center">
+                                <h3 class="text-xl font-semibold mb-4 w-full" style="color: var(--color-on-primary-container);">1. Carrier Image</h3>
+                                <label for="encode-image-input" class="file-input-label w-full h-32 flex flex-col items-center justify-center rounded-lg cursor-pointer">
+                                    <img id="encode-image-preview" class="hidden h-full w-full object-contain rounded-lg" />
+                                    <div id="encode-image-placeholder" class="text-center">
+                                        <svg class="mx-auto h-10 w-10" style="color: var(--color-on-surface-variant);" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" /></svg>
+                                        <p class="mt-2 text-sm">Click to upload PNG or JPG</p>
+                                    </div>
+                                </label>
+                                <p id="encode-image-name" class="text-xs mt-2 truncate max-w-full px-2"></p>
+                                <input id="encode-image-input" type="file" class="hidden" accept="image/png, image/jpeg">
+                            </div>
+
+                             <div class="material-card p-6 flex flex-col items-center justify-center">
+                                <h3 class="text-xl font-semibold mb-4 w-full" style="color: var(--color-on-primary-container);">2. Secret File</h3>
+                                <label for="encode-file-input" class="file-input-label w-full h-32 flex flex-col items-center justify-center rounded-lg cursor-pointer">
+                                    <div id="encode-file-placeholder" class="text-center">
+                                        <svg class="mx-auto h-10 w-10" style="color: var(--color-on-surface-variant);" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10.5v6m3-3H9m4.06-7.19-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" /></svg>
+                                        <p class="mt-2 text-sm">Click to upload any file</p>
+                                    </div>
+                                </label>
+                                <p id="encode-file-name" class="text-xs mt-2 truncate max-w-full px-2"></p>
+                                <input id="encode-file-input" type="file" class="hidden">
+                            </div>
+                        </div>
+                        <!-- Right Column: Password -->
+                        <div class="material-card p-6 flex flex-col justify-start">
+                            <h3 class="text-xl font-semibold mb-4" style="color: var(--color-on-primary-container);">3. Set a Password</h3>
+                            <div class="space-y-6">
+                                <div class="form-field">
+                                    <input type="password" id="encode-password" class="form-input" placeholder=" ">
+                                    <label for="encode-password" class="form-label">Password</label>
+                                </div>
+                                <div class="form-field">
+                                    <input type="password" id="encode-password-confirm" class="form-input" placeholder=" ">
+                                    <label for="encode-password-confirm" class="form-label">Confirm Password</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 text-center">
+                        <button id="encode-button" class="material-button text-lg font-semibold py-3 px-8 rounded-full disabled:opacity-50" disabled>
+                            Encrypt & Hide File
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Decode View -->
+                <div id="view-decode" class="hidden">
+                    <div class="max-w-2xl mx-auto">
+                         <div class="material-card p-6 space-y-8">
+                             <div>
+                                <h3 class="text-xl font-semibold text-center" style="color: var(--color-on-primary-container);">1. Choose Image</h3>
+                                <label for="decode-image-input" class="file-input-label mt-4 w-full h-48 flex flex-col items-center justify-center rounded-lg cursor-pointer">
+                                    <img id="decode-image-preview" class="hidden h-full w-full object-contain rounded-lg" />
+                                    <div id="decode-image-placeholder" class="text-center">
+                                        <svg class="mx-auto h-12 w-12" style="color: var(--color-on-surface-variant);" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z" clip-rule="evenodd" /></svg>
+                                        <p class="mt-2 text-sm">Click to upload the encoded image</p>
+                                    </div>
+                                </label>
+                                <p id="decode-image-name" class="text-xs mt-2 text-center truncate max-w-full px-2"></p>
+                                <input id="decode-image-input" type="file" class="hidden" accept="image/png, image/jpeg">
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-center" style="color: var(--color-on-primary-container);">2. Enter Password</h3>
+                                 <div class="mt-4 form-field">
+                                    <input type="password" id="decode-password" class="form-input" placeholder=" ">
+                                    <label for="decode-password" class="form-label">Password</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-8 text-center">
+                            <button id="decode-button" class="material-button text-lg font-semibold py-3 px-8 rounded-full disabled:opacity-50" disabled>
+                                Decrypt & Reveal File
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status/Result Area -->
+            <div id="status-area" class="mt-8 text-center min-h-[6rem] flex items-center justify-center"></div>
+        </main>
+    </div>
+
+    <!-- Floating Navigation -->
+    <div class="fixed bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 p-2 rounded-3xl shadow-lg" style="background-color: var(--color-surface-container-high);">
+        <div id="mode-switcher" class="flex items-center gap-1 p-1 rounded-full" style="background-color: var(--color-surface-container);">
+            <button id="switch-encode" class="floating-nav-item">
+                <svg class="icon h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                <span class="text-xs font-medium">Encode</span>
+            </button>
+            <button id="switch-decode" class="floating-nav-item">
+                <svg class="icon h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 1 1 9 0v3.75M3.75 21.75h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H3.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                <span class="text-xs font-medium">Decode</span>
+            </button>
+        </div>
+        <button id="theme-toggle" class="p-3 rounded-full" style="color: var(--color-on-surface-variant); background-color: var(--color-surface-container);">
+            <svg id="theme-icon-light" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>
+            <svg id="theme-icon-dark" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Elements ---
+            const encodeView = document.getElementById('view-encode');
+            const decodeView = document.getElementById('view-decode');
+            const switchEncodeBtn = document.getElementById('switch-encode');
+            const switchDecodeBtn = document.getElementById('switch-decode');
+
+            const encodeImageInput = document.getElementById('encode-image-input');
+            const encodeImagePreview = document.getElementById('encode-image-preview');
+            const encodeImagePlaceholder = document.getElementById('encode-image-placeholder');
+            const encodeImageName = document.getElementById('encode-image-name');
+            
+            const encodeFileInput = document.getElementById('encode-file-input');
+            const encodeFilePlaceholder = document.getElementById('encode-file-placeholder');
+            const encodeFileName = document.getElementById('encode-file-name');
+            const encodePassword = document.getElementById('encode-password');
+            const encodePasswordConfirm = document.getElementById('encode-password-confirm');
+            const encodeButton = document.getElementById('encode-button');
+
+            const decodeImageInput = document.getElementById('decode-image-input');
+            const decodeImagePreview = document.getElementById('decode-image-preview');
+            const decodeImagePlaceholder = document.getElementById('decode-image-placeholder');
+            const decodeImageName = document.getElementById('decode-image-name');
+            const decodePassword = document.getElementById('decode-password');
+            const decodeButton = document.getElementById('decode-button');
+            
+            const statusArea = document.getElementById('status-area');
+            
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeIconLight = document.getElementById('theme-icon-light');
+            const themeIconDark = document.getElementById('theme-icon-dark');
+
+            // --- State ---
+            let carrierFile = null;
+            let secretFile = null;
+            let stegoFile = null;
+
+            // --- Constants ---
+            const MAGIC_DELIMITER = new TextEncoder().encode("ENCRYPTEDSTEGO"); // 14 bytes
+            const SALT_LENGTH = 16;
+            const IV_LENGTH = 12;
+            
+            // --- Theme Management ---
+            const docElement = document.documentElement;
+            const applyTheme = (theme) => {
+                localStorage.setItem('theme', theme);
+                if (theme === 'dark') {
+                    docElement.classList.add('dark');
+                    docElement.classList.remove('light');
+                    themeIconLight.classList.add('hidden');
+                    themeIconDark.classList.remove('hidden');
+                } else {
+                    docElement.classList.remove('dark');
+                    docElement.classList.add('light');
+                    themeIconLight.classList.remove('hidden');
+                    themeIconDark.classList.add('hidden');
+                }
+            };
+            
+            themeToggleBtn.addEventListener('click', () => {
+                const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+            });
+            
+            // Initialize theme
+            applyTheme(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+
+            // --- UI Logic ---
+            const showStatus = (message, type = 'info') => {
+                let colorClass = 'text-gray-600 dark:text-gray-300';
+                if (type === 'error') colorClass = 'text-[var(--color-error)]';
+                if (type === 'success') colorClass = 'text-green-600 dark:text-green-400';
+                statusArea.innerHTML = `<p class="${colorClass}">${message}</p>`;
+            };
+
+            const showResult = (blob, filename) => {
+                const url = URL.createObjectURL(blob);
+                statusArea.innerHTML = `
+                    <div class="material-card p-4 flex flex-col sm:flex-row items-center justify-between gap-4 w-full max-w-md">
+                        <div class="text-left">
+                            <p class="font-semibold" style="color: var(--color-on-primary-container);">Success! File is ready.</p>
+                            <p class="text-sm" style="color: var(--color-on-surface-variant);">${filename}</p>
+                        </div>
+                        <a href="${url}" download="${filename}" class="material-button py-2 px-4 rounded-full font-medium whitespace-nowrap">
+                            Download
+                        </a>
+                    </div>
+                `;
+            };
+
+            const clearStatus = () => { statusArea.innerHTML = ''; };
+
+            const switchTab = (tab) => {
+                clearStatus();
+                if (tab === 'encode') {
+                    encodeView.classList.remove('hidden');
+                    decodeView.classList.add('hidden');
+                    switchEncodeBtn.classList.add('active');
+                    switchDecodeBtn.classList.remove('active');
+                } else {
+                    encodeView.classList.add('hidden');
+                    decodeView.classList.remove('hidden');
+                    switchEncodeBtn.classList.remove('active');
+                    switchDecodeBtn.classList.add('active');
+                }
+            };
+            
+            switchEncodeBtn.addEventListener('click', () => switchTab('encode'));
+            switchDecodeBtn.addEventListener('click', () => switchTab('decode'));
+            switchTab('encode'); // Default view
+
+            const updateEncodeButtonState = () => {
+                encodeButton.disabled = !(carrierFile && secretFile && encodePassword.value && encodePasswordConfirm.value);
+            };
+
+            const updateDecodeButtonState = () => {
+                decodeButton.disabled = !(stegoFile && decodePassword.value);
+            };
+
+            // --- Event Listeners for Inputs ---
+            encodeImageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    carrierFile = file;
+                    encodeImagePreview.src = URL.createObjectURL(file);
+                    encodeImagePreview.classList.remove('hidden');
+                    encodeImagePlaceholder.classList.add('hidden');
+                    encodeImageName.textContent = file.name;
+                    updateEncodeButtonState();
+                }
+            });
+
+            encodeFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    secretFile = file;
+                    encodeFilePlaceholder.innerHTML = `<p class="mt-2 text-sm font-semibold">${file.name}</p><p class="text-xs mt-1">${(file.size / 1024 / 1024).toFixed(2)} MB</p>`;
+                    encodeFileName.textContent = file.name;
+                    updateEncodeButtonState();
+                }
+            });
+            
+            [encodePassword, encodePasswordConfirm].forEach(el => el.addEventListener('input', updateEncodeButtonState));
+
+            decodeImageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    stegoFile = file;
+                    decodeImagePreview.src = URL.createObjectURL(file);
+                    decodeImagePreview.classList.remove('hidden');
+                    decodeImagePlaceholder.classList.add('hidden');
+                    decodeImageName.textContent = file.name;
+                    updateDecodeButtonState();
+                }
+            });
+            decodePassword.addEventListener('input', updateDecodeButtonState);
+
+            // --- Crypto Logic ---
+            async function getKey(password, salt) {
+                const enc = new TextEncoder();
+                const keyMaterial = await window.crypto.subtle.importKey( "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]);
+                return window.crypto.subtle.deriveKey( { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256", }, keyMaterial, { name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]);
+            }
+
+            async function encryptData(password, data) {
+                const salt = window.crypto.getRandomValues(new Uint8Array(SALT_LENGTH));
+                const iv = window.crypto.getRandomValues(new Uint8Array(IV_LENGTH));
+                const key = await getKey(password, salt);
+                const encryptedContent = await window.crypto.subtle.encrypt( { name: "AES-GCM", iv: iv }, key, data );
+                const encryptedBytes = new Uint8Array(encryptedContent);
+                const result = new Uint8Array(salt.length + iv.length + encryptedBytes.length);
+                result.set(salt, 0);
+                result.set(iv, salt.length);
+                result.set(encryptedBytes, salt.length + iv.length);
+                return result;
+            }
+
+            async function decryptData(password, data) {
+                const salt = data.slice(0, SALT_LENGTH);
+                const iv = data.slice(SALT_LENGTH, SALT_LENGTH + IV_LENGTH);
+                const encryptedContent = data.slice(SALT_LENGTH + IV_LENGTH);
+                const key = await getKey(password, salt);
+                try {
+                    const decryptedContent = await window.crypto.subtle.decrypt( { name: "AES-GCM", iv: iv }, key, encryptedContent );
+                    return new Uint8Array(decryptedContent);
+                } catch (e) {
+                    console.error(e);
+                    return null;
+                }
+            }
+            
+            function findSequence(array, sequence) {
+                for (let i = 0; i <= array.length - sequence.length; i++) {
+                    let found = true;
+                    for (let j = 0; j < sequence.length; j++) {
+                        if (array[i + j] !== sequence[j]) {
+                            found = false;
+                            break;
+                        }
+                    }
+                    if (found) return i;
+                }
+                return -1;
+            }
+
+            // --- Core Steganography Logic ---
+            encodeButton.addEventListener('click', async () => {
+                if (encodePassword.value !== encodePasswordConfirm.value) {
+                    showStatus("Error: Passwords do not match.", 'error');
+                    return;
+                }
+                clearStatus();
+                showStatus('Reading files...');
+
+                const carrierBuffer = await carrierFile.arrayBuffer();
+                const secretBuffer = await secretFile.arrayBuffer();
+                
+                showStatus('Preparing payload...');
+                const filenameBytes = new TextEncoder().encode(secretFile.name);
+                const filenameLengthBytes = new Uint8Array(2);
+                new DataView(filenameLengthBytes.buffer).setUint16(0, filenameBytes.length);
+                const payloadToEncrypt = new Uint8Array(2 + filenameBytes.length + secretBuffer.byteLength);
+                payloadToEncrypt.set(filenameLengthBytes, 0);
+                payloadToEncrypt.set(filenameBytes, 2);
+                payloadToEncrypt.set(new Uint8Array(secretBuffer), 2 + filenameBytes.length);
+                
+                showStatus('Encrypting data... This may take a moment.');
+                const encryptedPayload = await encryptData(encodePassword.value, payloadToEncrypt);
+
+                showStatus('Combining files...');
+                const finalBlob = new Blob([ carrierBuffer, MAGIC_DELIMITER, encryptedPayload ]);
+                const newFilename = `${carrierFile.name.split('.')[0]}-stego.${carrierFile.name.split('.').pop()}`;
+                showResult(finalBlob, newFilename);
+            });
+
+            decodeButton.addEventListener('click', async () => {
+                clearStatus();
+                showStatus('Reading image file...');
+                const stegoBuffer = await stegoFile.arrayBuffer();
+                const stegoBytes = new Uint8Array(stegoBuffer);
+
+                const delimiterIndex = findSequence(stegoBytes, MAGIC_DELIMITER);
+                if (delimiterIndex === -1) {
+                    showStatus('Error: No hidden file found in this image. (Invalid delimiter)', 'error');
+                    return;
+                }
+
+                const encryptedPayload = stegoBytes.slice(delimiterIndex + MAGIC_DELIMITER.length);
+                
+                showStatus('Decrypting payload...');
+                const decryptedPayload = await decryptData(decodePassword.value, encryptedPayload);
+
+                if (!decryptedPayload) {
+                    showStatus('Error: Decryption failed. Check your password or the file may be corrupt.', 'error');
+                    return;
+                }
+
+                showStatus('Parsing decrypted data...');
+                const filenameLength = new DataView(decryptedPayload.buffer).getUint16(0);
+                const filenameBytes = decryptedPayload.slice(2, 2 + filenameLength);
+                const filename = new TextDecoder().decode(filenameBytes);
+                const fileData = decryptedPayload.slice(2 + filenameLength);
+
+                const blob = new Blob([fileData]);
+                showResult(blob, filename);
+            });
+        });
+    </script>
+</body>
+</html>
